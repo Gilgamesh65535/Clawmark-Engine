@@ -13,6 +13,10 @@ public:
     uint32_t rotationCenterX = 0;
     uint32_t rotationCenterY = 0;
 
+    // These aren't stored in Scratch, but they're needed for the renderer, and so we save the costume width and height when loading the costume
+    uint32_t width = 0;
+    uint32_t height = 0;
+
     Costume() = default;
 
     // Constructor for Costume

@@ -6,37 +6,22 @@
 #include <variant>
 #include <vector>
 
-// Forward-declared so Sprite.hpp can include Variable.hpp and get Value without a circular dependency
-using Value = std::variant<double, std::string, bool>;
-
-enum class VariableType : uint8_t {
-    SCALAR,
-    LIST
-    // Scratch also has "broadcast" variables but they are handled separately as plain string identifiers, not stored here
-};
+using Value = std::variant<double, std::string, bool>;  // Forward-declared so Sprite.hpp can include Variable.hpp and get Value without a circular dependency
 
 class Variable {
 public:
     std::string id;
-    std::string name;  // In Scratch, it's saved as a UTF-16 string, but in project.json it's always UTF-8
-    VariableType type;
+    std::string name;  // In Scratch, it's saved as a UTF-16 string, but in project.json it's always UTF-8 so we store it as UTF-8 here
+    std::string type;  // "" = scalar, "list" = list
     bool isCloud;
 
     // Only one of these is active at a time depending on `type`
     std::variant<Value, std::vector<Value>> value;
 
-    Variable(std::string id, std::string name, VariableType type, bool isCloud)
+    Variable(std::string id, std::string name, std::string type, bool isCloud)
         : id(std::move(id)), name(std::move(name)), type(type), isCloud(isCloud)
     {
-        switch (type) {
-            case VariableType::SCALAR:
-                value = Value(0.0);
-                break;
-            case VariableType::LIST:
-                value = std::vector<Value>{};
-                break;
-            default:
-                throw std::invalid_argument("Invalid variable type");
-        }
+        if (type == "") { value = Value(0.0); }
+        else if (type == "list") { value = std::vector<Value>{}; }
     }
 };
